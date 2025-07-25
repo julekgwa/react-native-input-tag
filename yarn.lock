@@ -11103,6 +11103,23 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-input-tag-example@workspace:example":
+  version: 0.0.0-use.local
+  resolution: "react-native-input-tag-example@workspace:example"
+  dependencies:
+    "@babel/core": ^7.20.0
+    "@expo/metro-runtime": ~5.0.4
+    expo: ~53.0.20
+    expo-status-bar: ~2.2.3
+    react: 19.0.0
+    react-dom: 19.0.0
+    react-native: 0.79.5
+    react-native-builder-bob: ^0.40.13
+    react-native-monorepo-config: ^0.1.9
+    react-native-web: ~0.20.0
+  languageName: unknown
+  linkType: soft
+
 "react-native-input-tag@workspace:.":
   version: 0.0.0-use.local
   resolution: "react-native-input-tag@workspace:."
@@ -11136,23 +11153,6 @@ __metadata:
   peerDependencies:
     react: "*"
     react-native: "*"
-  languageName: unknown
-  linkType: soft
-
-"react-native-input-tags-example@workspace:example":
-  version: 0.0.0-use.local
-  resolution: "react-native-input-tags-example@workspace:example"
-  dependencies:
-    "@babel/core": ^7.20.0
-    "@expo/metro-runtime": ~5.0.4
-    expo: ~53.0.20
-    expo-status-bar: ~2.2.3
-    react: 19.0.0
-    react-dom: 19.0.0
-    react-native: 0.79.5
-    react-native-builder-bob: ^0.40.13
-    react-native-monorepo-config: ^0.1.9
-    react-native-web: ~0.20.0
   languageName: unknown
   linkType: soft
 
