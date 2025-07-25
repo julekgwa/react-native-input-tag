@@ -108,9 +108,9 @@
     "typescript": "~5.5.4"
   },
   "peerDependencies": {
+    "@shopify/flash-list": "*",
     "react": "*",
-    "react-native": "*",
-    "@shopify/flash-list": "*"
+    "react-native": "*"
   },
   "workspaces": [
     "example"
