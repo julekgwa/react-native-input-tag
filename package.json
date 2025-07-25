@@ -43,7 +43,29 @@
   "keywords": [
     "react-native",
     "ios",
-    "android"
+    "android",
+    "web",
+    "tags",
+    "tag-input",
+    "input",
+    "autocomplete",
+    "suggestions",
+    "custom-rendering",
+    "typescript",
+    "ui-component",
+    "form-input",
+    "multi-select",
+    "chip-input",
+    "token-input",
+    "tagging",
+    "filtering",
+    "searchable",
+    "customizable",
+    "accessibility",
+    "cross-platform",
+    "react-component",
+    "chip-input",
+    "chips"
   ],
   "repository": {
     "type": "git",
@@ -87,7 +109,8 @@
   },
   "peerDependencies": {
     "react": "*",
-    "react-native": "*"
+    "react-native": "*",
+    "@shopify/flash-list": "*"
   },
   "workspaces": [
     "example"
@@ -153,8 +176,5 @@
     "languages": "js",
     "type": "library",
     "version": "0.52.0"
-  },
-  "dependencies": {
-    "@shopify/flash-list": "^1.8.3"
   }
 }
