@@ -24,6 +24,30 @@ bun add react-native-input-tag
 
 Try the component directly in your browser or on your device with Expo Go!
 
+> 💡 **Snack Example**: Check out [`example/SnackExample.js`](./example/SnackExample.js) for a complete React Navigation-based demo that works perfectly in Snack with all features showcased across 8 different screens.
+
+### 🎮 Example App with All Features
+
+The example app showcases all TagInput features with expo-router navigation:
+
+```bash
+cd example
+npm install --legacy-peer-deps
+expo start
+```
+
+**Example App Features:**
+- 📝 Basic Usage
+- 🎨 Advanced Customization
+- 💡 Custom Suggestion Rendering
+- 🏷️ Custom Tag Rendering
+- 🗑️ Custom Delete Button
+- 📋 Formik + Yup Integration
+- 🎣 React Hook Form Integration
+- ⚙️ Advanced Form Validation
+
+Each example is on a separate screen with detailed explanations and interactive demos.
+
 ## Table of Contents
 
 - [react-native-input-tag](#react-native-input-tag)
@@ -42,6 +66,10 @@ Try the component directly in your browser or on your device with Expo Go!
     - [Custom Suggestion Rendering](#custom-suggestion-rendering)
     - [Custom Tag Rendering](#custom-tag-rendering)
     - [Custom Delete Button](#custom-delete-button)
+  - [Form Integration Examples](#form-integration-examples)
+    - [Using with Formik + Yup](#using-with-formik--yup)
+    - [Using with React Hook Form](#using-with-react-hook-form)
+    - [Advanced Form Integration with Custom Validation](#advanced-form-integration-with-custom-validation)
   - [API](#api)
     - [Props](#props)
       - [Core Props](#core-props)
@@ -482,6 +510,527 @@ const styles = StyleSheet.create({
 - 🔄 **Easy integration**: Works with existing tag styles
 - 📱 **Consistent UX**: Maintain app-wide delete button patterns
 - ⚡ **Performance**: Lighter than full custom tag rendering
+
+## Form Integration Examples
+
+### Using with Formik + Yup
+
+Here's how to integrate TagInput with Formik for form validation:
+
+```tsx
+import React from 'react';
+import { View, Button, Text, StyleSheet } from 'react-native';
+import { Formik } from 'formik';
+import * as Yup from 'yup';
+import { TagInput, type ITags } from 'react-native-input-tag';
+
+// Validation schema
+const validationSchema = Yup.object().shape({
+  skills: Yup.array()
+    .of(Yup.string().required())
+    .min(1, 'At least one skill is required')
+    .max(10, 'Maximum 10 skills allowed'),
+  interests: Yup.array()
+    .of(Yup.string().required())
+    .min(2, 'At least two interests are required'),
+});
+
+const FormikExample = () => {
+  const skillSuggestions = [
+    'React Native', 'JavaScript', 'TypeScript', 'Node.js',
+    'Python', 'Java', 'Swift', 'Kotlin', 'Flutter', 'React'
+  ];
+
+  const interestSuggestions = [
+    'Mobile Development', 'Web Development', 'AI/ML', 'Blockchain',
+    'Game Development', 'DevOps', 'UI/UX Design', 'Data Science'
+  ];
+
+  return (
+    <Formik
+      initialValues={{
+        skills: { tag: '', tagsArray: [] },
+        interests: { tag: '', tagsArray: [] },
+      }}
+      validationSchema={validationSchema}
+      onSubmit={(values) => {
+        console.log('Form submitted:', {
+          skills: values.skills.tagsArray,
+          interests: values.interests.tagsArray,
+        });
+      }}
+    >
+      {({ values, setFieldValue, errors, touched, handleSubmit }) => (
+        <View style={styles.container}>
+          <Text style={styles.title}>Profile Setup</Text>
+
+          {/* Skills Input */}
+          <View style={styles.fieldContainer}>
+            <TagInput
+              label="Skills *"
+              tags={values.skills}
+              updateState={(newTags) => setFieldValue('skills', newTags)}
+              suggestions={skillSuggestions}
+              keysForTag=" "
+              maxSuggestions={5}
+              highlightMatchedText={true}
+              containerStyle={[
+                styles.tagInput,
+                errors.skills && touched.skills && styles.errorBorder
+              ]}
+              labelStyle={styles.label}
+              placeholder="Type your skills and press space"
+            />
+            {errors.skills && touched.skills && (
+              <Text style={styles.errorText}>
+                {Array.isArray(errors.skills) ? errors.skills[0] : errors.skills}
+              </Text>
+            )}
+          </View>
+
+          {/* Interests Input */}
+          <View style={styles.fieldContainer}>
+            <TagInput
+              label="Interests *"
+              tags={values.interests}
+              updateState={(newTags) => setFieldValue('interests', newTags)}
+              suggestions={interestSuggestions}
+              keysForTag=","
+              maxSuggestions={4}
+              caseSensitive={false}
+              containerStyle={[
+                styles.tagInput,
+                errors.interests && touched.interests && styles.errorBorder
+              ]}
+              labelStyle={styles.label}
+              placeholder="Type your interests and press comma"
+            />
+            {errors.interests && touched.interests && (
+              <Text style={styles.errorText}>
+                {Array.isArray(errors.interests) ? errors.interests[0] : errors.interests}
+              </Text>
+            )}
+          </View>
+
+          <Button title="Submit Profile" onPress={handleSubmit} />
+        </View>
+      )}
+    </Formik>
+  );
+};
+```
+
+### Using with React Hook Form
+
+Here's how to integrate TagInput with React Hook Form:
+
+```tsx
+import React from 'react';
+import { View, Button, Text, StyleSheet } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as Yup from 'yup';
+import { TagInput, type ITags } from 'react-native-input-tag';
+
+// Validation schema
+const schema = Yup.object().shape({
+  technologies: Yup.array()
+    .of(Yup.string().required())
+    .min(1, 'Please select at least one technology')
+    .max(8, 'Maximum 8 technologies allowed'),
+  frameworks: Yup.array()
+    .of(Yup.string().required())
+    .min(1, 'Please select at least one framework'),
+});
+
+type FormData = {
+  technologies: string[];
+  frameworks: string[];
+};
+
+const ReactHookFormExample = () => {
+  const { control, handleSubmit, formState: { errors } } = useForm<FormData>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      technologies: [],
+      frameworks: [],
+    },
+  });
+
+  const techSuggestions = [
+    'JavaScript', 'TypeScript', 'Python', 'Java', 'Swift',
+    'Kotlin', 'Dart', 'Go', 'Rust', 'C++', 'PHP', 'Ruby'
+  ];
+
+  const frameworkSuggestions = [
+    'React Native', 'React', 'Vue.js', 'Angular', 'Flutter',
+    'Ionic', 'Xamarin', 'Cordova', 'NativeScript', 'Expo'
+  ];
+
+  const onSubmit = (data: FormData) => {
+    console.log('Form Data:', data);
+  };
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Tech Stack Survey</Text>
+
+      {/* Technologies Field */}
+      <View style={styles.fieldContainer}>
+        <Controller
+          control={control}
+          name="technologies"
+          render={({ field: { onChange, value } }) => (
+            <TagInput
+              label="Programming Languages *"
+              tags={{
+                tag: '',
+                tagsArray: value || [],
+              }}
+              updateState={(newTags) => onChange(newTags.tagsArray)}
+              suggestions={techSuggestions}
+              keysForTag=" "
+              maxSuggestions={6}
+              highlightMatchedText={true}
+              caseSensitive={false}
+              containerStyle={[
+                styles.tagInput,
+                errors.technologies && styles.errorBorder
+              ]}
+              labelStyle={styles.label}
+              tagStyle={styles.techTag}
+              placeholder="Type languages and press space"
+            />
+          )}
+        />
+        {errors.technologies && (
+          <Text style={styles.errorText}>{errors.technologies.message}</Text>
+        )}
+      </View>
+
+      {/* Frameworks Field */}
+      <View style={styles.fieldContainer}>
+        <Controller
+          control={control}
+          name="frameworks"
+          render={({ field: { onChange, value } }) => (
+            <TagInput
+              label="Frameworks & Libraries *"
+              tags={{
+                tag: '',
+                tagsArray: value || [],
+              }}
+              updateState={(newTags) => onChange(newTags.tagsArray)}
+              suggestions={frameworkSuggestions}
+              keysForTag=","
+              maxSuggestions={5}
+              highlightMatchedText={true}
+              containerStyle={[
+                styles.tagInput,
+                errors.frameworks && styles.errorBorder
+              ]}
+              labelStyle={styles.label}
+              tagStyle={styles.frameworkTag}
+              placeholder="Type frameworks and press comma"
+            />
+          )}
+        />
+        {errors.frameworks && (
+          <Text style={styles.errorText}>{errors.frameworks.message}</Text>
+        )}
+      </View>
+
+      <Button title="Submit Survey" onPress={handleSubmit(onSubmit)} />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+    color: '#333',
+  },
+  fieldContainer: {
+    marginBottom: 20,
+  },
+  tagInput: {
+    backgroundColor: 'white',
+    borderRadius: 8,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#e0e0e0',
+  },
+  errorBorder: {
+    borderColor: '#ff4444',
+    borderWidth: 2,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#333',
+    marginBottom: 8,
+  },
+  errorText: {
+    color: '#ff4444',
+    fontSize: 12,
+    marginTop: 5,
+    marginLeft: 5,
+  },
+  techTag: {
+    backgroundColor: '#4CAF50',
+    borderRadius: 16,
+  },
+  frameworkTag: {
+    backgroundColor: '#2196F3',
+    borderRadius: 16,
+  },
+});
+```
+
+### Advanced Form Integration with Custom Validation
+
+Here's an example with custom validation logic and conditional rendering:
+
+```tsx
+import React, { useState } from 'react';
+import { View, Button, Text, StyleSheet, Alert } from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { TagInput, type ITags } from 'react-native-input-tag';
+
+type ProjectFormData = {
+  projectTags: string[];
+  requiredSkills: string[];
+  optionalSkills: string[];
+};
+
+const AdvancedFormExample = () => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { control, handleSubmit, watch, formState: { errors }, setError, clearErrors } = useForm<ProjectFormData>({
+    defaultValues: {
+      projectTags: [],
+      requiredSkills: [],
+      optionalSkills: [],
+    },
+  });
+
+  const watchedRequiredSkills = watch('requiredSkills');
+
+  // Custom validation function
+  const validateSkillsOverlap = (optionalSkills: string[], requiredSkills: string[]) => {
+    const overlap = optionalSkills.filter(skill => requiredSkills.includes(skill));
+    return overlap.length === 0;
+  };
+
+  const onSubmit = async (data: ProjectFormData) => {
+    setIsSubmitting(true);
+
+    // Custom validation
+    if (!validateSkillsOverlap(data.optionalSkills, data.requiredSkills)) {
+      setError('optionalSkills', {
+        type: 'manual',
+        message: 'Optional skills cannot overlap with required skills'
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      Alert.alert('Success', 'Project created successfully!');
+      console.log('Project Data:', data);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to create project');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const projectSuggestions = [
+    'mobile-app', 'web-app', 'api', 'database', 'frontend',
+    'backend', 'fullstack', 'mvp', 'prototype', 'production'
+  ];
+
+  const skillSuggestions = [
+    'React Native', 'React', 'Node.js', 'TypeScript', 'JavaScript',
+    'Python', 'Java', 'Swift', 'Kotlin', 'Flutter', 'Vue.js',
+    'Angular', 'MongoDB', 'PostgreSQL', 'Firebase', 'AWS'
+  ];
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Create New Project</Text>
+
+      <Controller
+        control={control}
+        name="projectTags"
+        rules={{
+          validate: (value) =>
+            value.length >= 2 || 'Please add at least 2 project tags'
+        }}
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.fieldContainer}>
+            <TagInput
+              label="Project Tags"
+              tags={{ tag: '', tagsArray: value }}
+              updateState={(newTags) => onChange(newTags.tagsArray)}
+              suggestions={projectSuggestions}
+              keysForTag=" "
+              maxSuggestions={4}
+              containerStyle={[
+                styles.tagInput,
+                errors.projectTags && styles.errorBorder
+              ]}
+              placeholder="Add project tags..."
+            />
+            {errors.projectTags && (
+              <Text style={styles.errorText}>{errors.projectTags.message}</Text>
+            )}
+          </View>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="requiredSkills"
+        rules={{
+          validate: (value) =>
+            value.length >= 1 || 'Please specify at least 1 required skill'
+        }}
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.fieldContainer}>
+            <TagInput
+              label="Required Skills"
+              tags={{ tag: '', tagsArray: value }}
+              updateState={(newTags) => {
+                onChange(newTags.tagsArray);
+                clearErrors('optionalSkills'); // Clear overlap error when required skills change
+              }}
+              suggestions={skillSuggestions}
+              keysForTag=","
+              maxSuggestions={5}
+              containerStyle={[
+                styles.tagInput,
+                errors.requiredSkills && styles.errorBorder
+              ]}
+              tagStyle={styles.requiredTag}
+              placeholder="Add required skills..."
+            />
+            {errors.requiredSkills && (
+              <Text style={styles.errorText}>{errors.requiredSkills.message}</Text>
+            )}
+          </View>
+        )}
+      />
+
+      <Controller
+        control={control}
+        name="optionalSkills"
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.fieldContainer}>
+            <TagInput
+              label="Optional Skills"
+              tags={{ tag: '', tagsArray: value }}
+              updateState={(newTags) => {
+                onChange(newTags.tagsArray);
+                // Clear error when user modifies optional skills
+                if (errors.optionalSkills) {
+                  clearErrors('optionalSkills');
+                }
+              }}
+              suggestions={skillSuggestions.filter(skill => !watchedRequiredSkills.includes(skill))}
+              keysForTag=","
+              maxSuggestions={5}
+              containerStyle={[
+                styles.tagInput,
+                errors.optionalSkills && styles.errorBorder
+              ]}
+              tagStyle={styles.optionalTag}
+              placeholder="Add optional skills..."
+            />
+            {errors.optionalSkills && (
+              <Text style={styles.errorText}>{errors.optionalSkills.message}</Text>
+            )}
+          </View>
+        )}
+      />
+
+      <Button
+        title={isSubmitting ? "Creating..." : "Create Project"}
+        onPress={handleSubmit(onSubmit)}
+        disabled={isSubmitting}
+      />
+    </View>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+    backgroundColor: '#f8f9fa',
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 30,
+    textAlign: 'center',
+    color: '#212529',
+  },
+  fieldContainer: {
+    marginBottom: 25,
+  },
+  tagInput: {
+    backgroundColor: 'white',
+    borderRadius: 12,
+    padding: 16,
+    borderWidth: 1,
+    borderColor: '#dee2e6',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  errorBorder: {
+    borderColor: '#dc3545',
+    borderWidth: 2,
+  },
+  errorText: {
+    color: '#dc3545',
+    fontSize: 14,
+    marginTop: 8,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
+  requiredTag: {
+    backgroundColor: '#dc3545',
+    borderRadius: 20,
+  },
+  optionalTag: {
+    backgroundColor: '#6c757d',
+    borderRadius: 20,
+  },
+});
+
+export { FormikExample, ReactHookFormExample, AdvancedFormExample };
+```
+
+**Form Integration Benefits:**
+- ✅ **Seamless validation**: Works with popular validation libraries
+- ✅ **Error handling**: Proper error states and messaging
+- ✅ **Type safety**: Full TypeScript support with form libraries
+- ✅ **Custom validation**: Support for complex validation logic
+- ✅ **Real-time feedback**: Immediate validation and suggestions
 
 ## API
 

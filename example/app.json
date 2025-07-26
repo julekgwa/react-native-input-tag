@@ -26,6 +26,10 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "scheme": "tagInputExample",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
