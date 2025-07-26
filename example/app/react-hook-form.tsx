@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   View,
   Button,
@@ -13,12 +14,15 @@ import { TagInput } from 'react-native-input-tag';
 
 const schema = Yup.object().shape({
   technologies: Yup.array()
-    .of(Yup.string().required())
+    .of(Yup.string().required('Technology is required'))
     .min(1, 'Please select at least one technology')
-    .max(8, 'Maximum 8 technologies allowed'),
+    .max(8, 'Maximum 8 technologies allowed')
+    .required('Technologies is required'),
   frameworks: Yup.array()
-    .of(Yup.string().required())
-    .min(1, 'Please select at least one framework'),
+    .of(Yup.string().required('Framework is required'))
+    .min(1, 'Please select at least one framework')
+    .max(5, 'Maximum 5 frameworks allowed')
+    .required('Frameworks is required'),
 });
 
 type FormData = {
@@ -27,6 +31,10 @@ type FormData = {
 };
 
 export default function ReactHookFormExample() {
+  // Local state to manage current input text for each field
+  const [techInputText, setTechInputText] = useState('');
+  const [frameworkInputText, setFrameworkInputText] = useState('');
+
   const {
     control,
     handleSubmit,
@@ -87,11 +95,11 @@ export default function ReactHookFormExample() {
               render={({ field: { onChange, value } }) => (
                 <TagInput
                   label="Programming Languages *"
-                  tags={{
-                    tag: '',
-                    tagsArray: value || [],
+                  tags={{ tag: techInputText, tagsArray: value || [] }}
+                  updateState={(newTags) => {
+                    setTechInputText(newTags.tag);
+                    onChange(newTags.tagsArray);
                   }}
-                  updateState={(newTags) => onChange(newTags.tagsArray)}
                   suggestions={techSuggestions}
                   keysForTag=" "
                   maxSuggestions={6}
@@ -123,11 +131,11 @@ export default function ReactHookFormExample() {
               render={({ field: { onChange, value } }) => (
                 <TagInput
                   label="Frameworks & Libraries *"
-                  tags={{
-                    tag: '',
-                    tagsArray: value || [],
+                  tags={{ tag: frameworkInputText, tagsArray: value || [] }}
+                  updateState={(newTags) => {
+                    setFrameworkInputText(newTags.tag);
+                    onChange(newTags.tagsArray);
                   }}
-                  updateState={(newTags) => onChange(newTags.tagsArray)}
                   suggestions={frameworkSuggestions}
                   keysForTag=","
                   maxSuggestions={5}

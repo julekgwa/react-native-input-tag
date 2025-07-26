@@ -20,6 +20,11 @@ type ProjectFormData = {
 export default function AdvancedFormExample() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Local state to manage current input text for each field
+  const [projectTagText, setProjectTagText] = useState('');
+  const [requiredSkillText, setRequiredSkillText] = useState('');
+  const [optionalSkillText, setOptionalSkillText] = useState('');
+
   const {
     control,
     handleSubmit,
@@ -123,8 +128,11 @@ export default function AdvancedFormExample() {
               <View style={styles.fieldContainer}>
                 <TagInput
                   label="Project Tags"
-                  tags={{ tag: '', tagsArray: value }}
-                  updateState={(newTags) => onChange(newTags.tagsArray)}
+                  tags={{ tag: projectTagText, tagsArray: value }}
+                  updateState={(newTags) => {
+                    setProjectTagText(newTags.tag);
+                    onChange(newTags.tagsArray);
+                  }}
                   suggestions={projectSuggestions}
                   keysForTag=" "
                   maxSuggestions={4}
@@ -158,8 +166,9 @@ export default function AdvancedFormExample() {
               <View style={styles.fieldContainer}>
                 <TagInput
                   label="Required Skills"
-                  tags={{ tag: '', tagsArray: value }}
+                  tags={{ tag: requiredSkillText, tagsArray: value }}
                   updateState={(newTags) => {
+                    setRequiredSkillText(newTags.tag);
                     onChange(newTags.tagsArray);
                     clearErrors('optionalSkills');
                   }}
@@ -192,8 +201,9 @@ export default function AdvancedFormExample() {
               <View style={styles.fieldContainer}>
                 <TagInput
                   label="Optional Skills"
-                  tags={{ tag: '', tagsArray: value }}
+                  tags={{ tag: optionalSkillText, tagsArray: value }}
                   updateState={(newTags) => {
+                    setOptionalSkillText(newTags.tag);
                     onChange(newTags.tagsArray);
                     if (errors.optionalSkills) {
                       clearErrors('optionalSkills');

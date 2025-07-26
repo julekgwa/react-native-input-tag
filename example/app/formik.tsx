@@ -11,13 +11,18 @@ import * as Yup from 'yup';
 import { TagInput } from 'react-native-input-tag';
 
 const validationSchema = Yup.object().shape({
-  skills: Yup.array()
-    .of(Yup.string().required())
-    .min(1, 'At least one skill is required')
-    .max(10, 'Maximum 10 skills allowed'),
-  interests: Yup.array()
-    .of(Yup.string().required())
-    .min(2, 'At least two interests are required'),
+  skills: Yup.object().shape({
+    tag: Yup.string(),
+    tagsArray: Yup.array()
+      .of(Yup.string().required('Skill is required'))
+      .min(1),
+  }),
+  interests: Yup.object().shape({
+    tag: Yup.string(),
+    tagsArray: Yup.array()
+      .of(Yup.string().required('Interest is required'))
+      .min(1),
+  }),
 });
 
 export default function FormikExample() {
@@ -130,7 +135,10 @@ export default function FormikExample() {
                 </View>
 
                 <View style={styles.buttonContainer}>
-                  <Button title="Submit Profile" onPress={handleSubmit} />
+                  <Button
+                    title="Submit Profile"
+                    onPress={() => handleSubmit()}
+                  />
                 </View>
               </View>
             )}

@@ -24,6 +24,7 @@ export interface ITagInputProps {
   tagsViewStyle?: StyleProp<ViewStyle>;
   tagTextStyle?: StyleProp<TextStyle>;
   disabledInputStyle?: StyleProp<ViewStyle>;
+  placeholder?: string;
   leftElementContainerStyle?: StyleProp<ViewStyle>;
   rightElementContainerStyle?: StyleProp<ViewStyle>;
   labelStyle?: StyleProp<TextStyle>;
